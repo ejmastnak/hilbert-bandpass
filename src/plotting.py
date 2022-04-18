@@ -332,10 +332,12 @@ def test_filter_time_domain_shift():
     """
     Tests entire filter in time domain
     """
-    frequencies = np.array([1000])
+    f_s=constants.F_S
+    f = 1500
+    frequencies = np.array([f])
     amplitudes = np.ones(len(frequencies))
     phase = np.zeros(len(frequencies))
-    num_periods=20
+    num_periods=15
 
     t, x_in = bandpass.get_sinusoids(frequencies, amplitudes, phase, num_periods=num_periods)
 
@@ -347,17 +349,32 @@ def test_filter_time_domain_shift():
     # xf = np.convolve(h, x_in)[int((M-1)/2):-int((M-1)/2)]
     xf = bandpass.convolve_oa(h, x_in)[int((M-1)/2):-int((M-1)/2)]
 
+    # Show five periods from period 5 to period 10 (Dropping first and last few
+    # periods to avoid transient effects)
+    T_start = 5
+    T_end = 10
+    N_start = int(T_start * f_s / f)
+    N_end = int(T_end * f_s / f)
+
+    x_in = x_in[N_start:N_end]
+    x_shifted = x_shifted[N_start:N_end]
+    xf = xf[N_start:N_end]
+
     plt.subplots(figsize=(7, 4))
     plt.xlabel("Digital index $ n $")
     plt.ylabel("Amplitude [AU]")
-    plt.plot(x_in, color=color_in, label='input', linewidth=1.5)
-    plt.plot(x_shifted, color=color_in, linestyle='--', label='input shifted by $\pi/2$\n(for reference)')
+
+    plt.plot(x_in, color=color_in, label='input ({} Hz)'.format(f), linewidth=1.5)
+    plt.plot(x_shifted, color=color_in, linestyle='--',
+            marker='o',
+            label='input shifted by $\pi/2$\n(for reference)')
     plt.plot(xf, color=color_out, label='filtered', linewidth=1.5)
+
     plt.legend(loc='lower left', framealpha=0.95)
     plt.tight_layout()
 
-    # if save_figs:
-    #     plt.savefig(fig_dir + "test-time-shift.pdf")
+    if save_figs:
+        plt.savefig(fig_dir + "test-time-shift.pdf")
 
     plt.show()
 
@@ -508,13 +525,13 @@ if __name__ == "__main__":
     # plot_H_total_abs()
     # plot_H_total_abs_no_window()
     # plot_H_compare_window()
-    plot_H_total_abs_close_up()
+    # plot_H_total_abs_close_up()
 
     # plot_H_hilbert_angle()
     # plot_H_total_angle()
 
     # test_filter_time_domain_shift()
-    # test_filter_square()
+    test_filter_square()
     # test_filter_bandpass()
 
 
