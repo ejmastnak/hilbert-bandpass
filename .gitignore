@@ -1,6 +1,6 @@
 # Source code
 src/__pycache__/
-src/test.py
+src/test
 
 # Image files generated progamatically
 *.pdf
