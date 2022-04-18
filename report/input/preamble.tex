@@ -1,0 +1,42 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb, bm, esint}
+\usepackage{graphicx}
+\usepackage{physics, siunitx}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+% Begin package configuration
+% --------------------------------------------- %
+\sisetup{separate-uncertainty=true, exponent-product=\cdot, range-units=single}
+\setcounter{secnumdepth}{2}
+\hypersetup{colorlinks = true, allcolors=blue}
+\graphicspath{{../figures/}}
+\newcommand{\hmargin}{3.0cm}
+\newcommand{\vmargin}{2.90cm}
+\geometry{top=\vmargin, bottom=\vmargin, left=\hmargin, right=\hmargin}
+% --------------------------------------------- %
+
+% Begin minted setup
+% --------------------------------------------- %
+\usepackage{minted, tcolorbox}
+\BeforeBeginEnvironment{minted}{\begin{tcolorbox}}
+\AfterEndEnvironment{minted}{\end{tcolorbox}}
+\setminted[python]{tabsize=2, breaklines}
+% --------------------------------------------- %
+
+% Begin bibliography setup
+% --------------------------------------------- %
+\usepackage{biblatex}
+\addbibresource{../sources.bib}
+\nocite{*}  % Pring uncited sources in bibliography
+% --------------------------------------------- %
+
+% Begin custom macros
+% --------------------------------------------- %
+\DeclareMathOperator{\sinc}{sinc}
+\DeclareSIUnit{\decibell}{dB}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand{\F}{\mathcal{F}}
+% --------------------------------------------- %

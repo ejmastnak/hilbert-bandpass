@@ -1,0 +1,24 @@
+# Source code
+src/__pycache__/
+src/test.py
+
+# Image files generated progamatically
+*.pdf
+*.png
+*.jpg
+
+# LaTeX compilation files
+_minted-report
+*-log.txt
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.run.xml
+*.synctex.gz
+*.toc

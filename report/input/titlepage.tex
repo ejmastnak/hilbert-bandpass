@@ -1,0 +1,39 @@
+\thispagestyle{empty}
+\begin{center}
+
+    \definecolor{ul-red}{RGB}{220,29,39}
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=0.09\linewidth]{ul-logo}
+    \end{figure}
+    \LARGE{\textsc{University of Ljubljana}}\\
+    \Large{\textsc{Faculty of {\color{ul-red} mathematics and physics}}}\\[1ex]
+    \large{\textsc{Department of physics}}\\
+    \vspace{5ex}
+    \huge{Data Acquisition and Processing}\\
+    \rule{0.9\textwidth}{0.2pt}\\[1ex] \LARGE{\textbf{Final report: Designing and implementing a real-time Hilbert transformer}}
+    \rule{0.9\textwidth}{0.2pt}
+
+    \vspace{1ex}
+
+    \begin{minipage}[t]{0.80\textwidth}
+        \normalsize{\textsc{Author:}} \hfill \large{\textsc{Student ID}:}\\
+    \large{Elijan Jakob Mastnak} \hfill \large{28181157}
+    \end{minipage}
+
+\end{center}
+
+\vspace{5ex}
+\begin{center}
+    \textbf{Assignment}\\[2mm]
+    \begin{minipage}[t]{0.80\textwidth}
+        Use the window method with an appropriate window function to design an FIR band-pass Hilbert transform filter for use with signals sampled at $ f_{\mathrm{s}} = \SI{44100}{\hertz} $.
+        The filter passband should span the frequency range from \SI{1000}{\hertz} to \SI{2000}{\hertz}; in the passband, the input and output signals should differ in phase by $ \pi/2 $ (as for a Hilbert transformer) and in amplitude by no more than one \SI{1}{\decibell}.
+        For frequencies below \SI{500}{\hertz} and above \SI{2500}{\hertz}, the output signal's amplitude should be at least \SI{40}{\decibell} less than the input amplitude.
+        Compute the FIR filter's coefficients, test the filter in an offline simulation, and finally ensure the filter works in real time.
+        
+    \end{minipage}
+
+    \vfill
+    \large{Ljubljana, September 2021}
+\end{center}
