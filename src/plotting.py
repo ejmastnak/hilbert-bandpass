@@ -10,29 +10,6 @@ F_PASS_L = constants.F_PASS_L  # [Hz]
 F_PASS_R = constants.F_PASS_R  # [Hz]
 F_STOP_R = constants.F_STOP_R  # [Hz]
 
-
-# start matplotlib defaults configuration
-# ------------------------------------------ #
-import matplotlib as mpl
-import matplotlib.font_manager as font_manager
-mpl.rcParams['font.family'] = 'serif'
-
-try:
-    cmfont = font_manager.FontProperties(fname=mpl.get_data_path() + '/fonts/ttf/cmr10.ttf')
-    mpl.rcParams['font.serif'] = cmfont.get_name()
-    mpl.rcParams['mathtext.fontset'] = 'cm'
-    mpl.rcParams['axes.unicode_minus'] = False  # so the minus sign '-' displays correctly in plots
-except FileNotFoundError as error:
-    plt.rcParams['mathtext.fontset'] = 'cm'
-    plt.rcParams['font.family'] = 'STIXGeneral'
-
-plt.rc('axes', labelsize=12)    # fontsize of the x and y labels
-plt.rc('axes', titlesize=16)    # fontsize of titles
-mpl.rcParams['lines.markersize'] = 5
-mpl.rcParams['lines.linewidth'] = 1
-# ------------------------------------------ #
-# end atplotlib defaults configuration
-
 color_blue = "#244d90"         # darker teal / blue
 color_orange_dark = "#91331f"  # dark orange
 color_orange_mid = "#e1692e"  # mid orange
