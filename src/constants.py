@@ -2,12 +2,11 @@
 Sample rate and filter specs related to the Hilbert transformer project.
 """
 
-F_S = 41000         # sample rate [Hz]
+F_S = 44100         # sample rate [Hz]
 NYQUIST = F_S/2     # Nyquist rate [Hz]
 PI = 3.141592653589793
 M = 529  # number of filter coefficients
 
-F_S = 41000  # sample rate [Hz]
 F_STOP_L = 500      # [Hz]
 F_PASS_L = 750     # [Hz]
 F_PASS_R = 2200     # [Hz]
