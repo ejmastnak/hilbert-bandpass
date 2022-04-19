@@ -108,7 +108,7 @@ We convert the continuous-time impulse response to discrete time (assuming sampl
 \end{equation}
 
 \subsubsection{Ideal Bandpass Impulse Response}
-The impulse response of an ideal \textit{bandpass} filter with high and low passband frequencies $ f_{\mathrm{high}} $ and $ f_{\mathrm{low}} $ may be constructed as the difference of two lowpass filters with cutoff frequencies $ f_{\mathrm{high}} $ and $ f_{\mathrm{low}} $, respectively \cite{ponikvar}, i.e.
+The impulse response of an ideal \textit{bandpass} filter with high and low passband frequencies $ f_{\mathrm{high}} $ and $ f_{\mathrm{low}} $ may be constructed as the difference of two lowpass filters with cutoff frequencies $ f_{\mathrm{high}} $ and $ f_{\mathrm{low}} $, respectively, i.e.
 \begin{align*}
     h_{\mathrm{bp}}[n] & = h_{\mathrm{lp}}[n; f_{\mathrm{high}}] - h_{\mathrm{lp}}[n; f_{\mathrm{low}}]\\[0.3ex]
     & = \frac{2 f_{\mathrm{high}}}{f_{\mathrm{s}}} \sinc \left[ \frac{2\pi f_{\mathrm{high}}}{f_{\mathrm{s}}}n \right] - \frac{2 f_{\mathrm{low}}}{f_{\mathrm{s}}} \sinc \left[ \frac{2\pi f_{\mathrm{low}}}{f_{\mathrm{s}}} n \right].
