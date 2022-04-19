@@ -56,12 +56,8 @@ class HilbertBandpass(object):
         self.delay_conv_prev = np.zeros(self.M - 1)
 
         # Some plotting parameters
-        color_blue = "#244d90"         # darker teal / blue
-        color_teal = "#3997bf"         # lighter teal/blue
-        color_orange_dark = "#91331f"  # dark orange
-        color_orange_mid = "#e1692e"   # mid orange
-        self.color_in = color_teal
-        self.color_out = color_orange_dark
+        self.color_in = constants.color_teal
+        self.color_out = constants.color_orange_dark
         self.width_in = 1.5
         self.width_out = 2
 

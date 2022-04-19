@@ -10,19 +10,15 @@ figure format can easily be changed (to e.g. JPEG or PNG) by changed by
 modifying the `format` parameter passed to Matplotlib's `savefig` function.
 """
 
-F_S = constants.F_S  # sample rate [Hz]
+F_S = constants.F_S            # sample rate [Hz]
 NYQUIST = constants.NYQUIST    # Nyqustion rate [Hz]
 F_STOP_L = constants.F_STOP_L  # [Hz]
 F_PASS_L = constants.F_PASS_L  # [Hz]
 F_PASS_R = constants.F_PASS_R  # [Hz]
 F_STOP_R = constants.F_STOP_R  # [Hz]
 
-color_blue = "#244d90"         # darker teal / blue
-color_orange_dark = "#91331f"  # dark orange
-color_orange_mid = "#e1692e"  # mid orange
-
-color_in = color_blue
-color_out = color_orange_dark
+color_in = constants.color_blue
+color_out = constants.color_orange_dark
 
 save_figs = True
 fig_dir = "../media/"
@@ -43,7 +39,6 @@ def plot_h_bp():
     """
     h = kernels.get_h_bp()
     h = h/np.max(abs(h))
-    # plt.figure(figsize=(4, 4))
     plt.plot(h, marker='.', linestyle='-')
     plt.xlabel("Digital index $ n $")
     plt.ylabel("Normalized amplitude $ h[n] $")
@@ -55,7 +50,6 @@ def plot_h_hilbert():
     """
     Plots the Hilbert transform's impulse response
     """
-    # h = bandpass.get_h_hilbert(f0=constants.NYQUIST)
     h = kernels.get_h_hilbert()
     h = h/np.max(abs(h))
     plt.plot(h, marker='.', linestyle='-')
@@ -85,7 +79,7 @@ def plot_h_all():
     """
     fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(7, 3))
 
-    # bandpass
+    # Bandpass
     ax = axes[0]
     h = kernels.get_h_bp()
     h = h/np.max(abs(h))
@@ -94,7 +88,7 @@ def plot_h_all():
     ax.set_ylabel("Normalized amplitude $ h[n] $")
     ax.set_title("Bandpass $ h_{\mathrm{bp}} $")
 
-    # Hilbert
+    # Hilbert transformer
     ax = axes[1]
     h = kernels.get_h_hilbert()
     h = h/np.max(abs(h))
@@ -102,7 +96,7 @@ def plot_h_all():
     ax.set_xlabel("Digital index $ n $")
     ax.set_title("Hilbert $ h_{\mathrm{H}} $")
 
-    # both
+    # Both bandpass and Hilbert transformer
     ax = axes[2]
     h = kernels.get_h()
     h = h/np.max(abs(h))
@@ -233,7 +227,6 @@ def plot_H_compare_window():
     ax = axes[0]
     f, H = kernels.get_H()
     # mark_bandpass_specs(ax)
-
 
     xmin, xmax = 0, 3000
     ymin, ymax = -70, 5

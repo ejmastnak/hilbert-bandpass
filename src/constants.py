@@ -26,3 +26,9 @@ W_STOP_L = 2*PI*F_STOP_L/F_S
 W_PASS_L = 2*PI*F_PASS_L/F_S
 W_PASS_R = 2*PI*F_PASS_R/F_S
 W_STOP_R = 2*PI*F_STOP_R/F_S
+
+# Colors for plotting
+color_blue = "#244d90"         # darker teal / blue
+color_teal = "#3997bf"         # lighter teal/blue
+color_orange_dark = "#91331f"  # dark orange
+color_orange_mid = "#e1692e"   # mid orange
