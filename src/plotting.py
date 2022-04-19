@@ -73,8 +73,8 @@ def plot_h_total():
 
 def plot_h_all():
     """
-    Plots the bandpass, Hilbert, and convolved BP-Hilbert filters' impulse response
-     on three separate axes
+    Plots the bandpass, Hilbert, and convolved BP-Hilbert filters' impulse
+    response on three separate Matplotlib axes.
     """
     fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(7, 3))
 
@@ -177,7 +177,10 @@ def plot_H_total_abs():
 
 def plot_H_total_abs_close_up():
     """
-    Plots the combined Hilbert-bandpass filter's frequency response
+    Plots the combined Hilbert-bandpass filter's frequency response, zooming in
+    on the passband and adding annotations to show the frequency response meets
+    all required filter specifications.
+
     """
     f, H = bandpass.get_H()
     fig, ax = plt.subplots(figsize=(7, 4))
@@ -214,9 +217,8 @@ def plot_H_total_abs_no_window():
 
 def plot_H_compare_window():
     """
-    Compares the windowed and unwindowed frequency response of the combined Hilbert-bandpass filter
-
-    Reduntant in that code is copied from plot_H functions above. Oh wel.
+    Compares the windowed and unwindowed frequency response of the combined
+    Hilbert-bandpass filter.
     """
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
 
@@ -285,32 +287,19 @@ def plot_H_hilbert_angle():
 
 def plot_H_total_angle():
     """
-    Plots the complete filter's angle response
-    :param f: real 1D numpy array holding frequency axis data points in Hz
-    :param H: complex 1D numpy array holding filter's frequency response
+    Plots the complete filter's unwrapped phase response.
+
     """
     f, H = bandpass.get_H()
     fig, ax = plt.subplots(figsize=(7,4))
     mark_angle_axes(ax)
     ax.plot(f, np.unwrap(np.angle(H)))
 
-    # # arrow
-    # ax.annotate("", 
-    #         xy=(500, -45), xytext=(0, -20), 
-    #         ha="center", va="center",
-    #         arrowprops=dict(facecolor='black', width=0.05, headwidth=4, headlength=6, shrink=0.15))
-    # # text
-    # ax.annotate("500 Hz",
-    #         xy=(500, -45), xytext=(0, -20), 
-    #         ha="center", va="center",
-    #         bbox=dict(facecolor='#FFFFFF', edgecolor='#222222', boxstyle='round,pad=0.2'))
-
     ax.set_title("Filter's Phase Response")
     plt.tight_layout()
 
     if save_figs:
         plt.savefig(fig_dir + "H-angle.pdf", bbox_inches='tight', pad_inches=0)
-
 
     plt.show()
 
@@ -330,7 +319,8 @@ def mark_angle_axes(ax):
 
 def test_filter_time_domain_shift():
     """
-    Tests entire filter in time domain
+    Demonstrates the filter's phase shift in the time domain using a sinusoidal
+    signal in the filter's passband.
     """
     f_s=constants.F_S
     f = 1500
@@ -381,7 +371,11 @@ def test_filter_time_domain_shift():
 
 def test_filter_square():
     """
-    Tests bandpass and Hilbert transform component of filter in both time and frequency domain using a square wave
+    Tests the filter on square wave input signal and shows the filtered output
+    in both the time and frequency domains. The time domain representation
+    shows the filter's Hilbert transformer (phase shift) and bandpass (reducing
+    a square wave to its sinusoidal fundamental) components.
+
     """
     h = bandpass.get_h()
     M = len(h)
@@ -447,9 +441,12 @@ def test_filter_square():
 
 def test_filter_bandpass():
     """
-    Tests bandpass and Hilbert transform component of filter 
-     in both time and frequency domain using an input signal
-     varying over a wide range of frequencies
+    Tests the filter on superposition of sinusuoids and shows the filtered
+    output in both the time and frequency domains. This plot is meant to fully
+    show the filter's bandpass properties---the filter strips the sinusoidal
+    components that lie outside the passband and passes only the component in
+    the passband
+
     """
     h = bandpass.get_h()
     M = len(h)
@@ -516,23 +513,12 @@ def test_filter_bandpass():
 
 
 if __name__ == "__main__":
-    # plot_h_bp()
-    # plot_h_hilbert()
-    # plot_h_total()
-    # plot_h_all()
+    plot_h_all()
+    plot_H_compare_window()
+    plot_H_total_abs_close_up()
+    plot_H_total_angle()
 
-    # plot_H_hilbert_abs()
-    # plot_H_total_abs()
-    # plot_H_total_abs_no_window()
-    # plot_H_compare_window()
-    # plot_H_total_abs_close_up()
-
-    # plot_H_hilbert_angle()
-    # plot_H_total_angle()
-
-    # test_filter_time_domain_shift()
+    test_filter_time_domain_shift()
     test_filter_square()
-    # test_filter_bandpass()
-
-
+    test_filter_bandpass()
 
