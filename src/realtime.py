@@ -3,7 +3,7 @@ import pyaudio
 import matplotlib
 import matplotlib.pyplot as plt
 from numpy.fft import fft, fftshift
-import bandpass, constants
+import kernels, constants
 
 class AudioStream(object):
     def __init__(self):
@@ -15,7 +15,7 @@ class AudioStream(object):
         self.GRAPH_MODE = self.PLOT_WAVE
 
         # Get filter's impulse response from `bandpass.py`
-        self.h = bandpass.get_h()
+        self.h = kernels.get_h()
         self.h = self.h.astype('float32')
         self.M = len(self.h)
         self.h_delay_by_M = np.zeros(self.M, dtype=np.float32)

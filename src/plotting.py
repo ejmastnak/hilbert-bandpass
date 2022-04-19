@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.fft import fft, fftshift
 import matplotlib.pyplot as plt
-import constants, bandpass
+import constants, kernels
 
 F_S = constants.F_S  # sample rate [Hz]
 NYQUIST = constants.NYQUIST    # Nyqustion rate [Hz]
@@ -34,7 +34,7 @@ def plot_h_bp():
     """
     Plots the bandpass filter's impulse response
     """
-    h = bandpass.get_h_bp()
+    h = kernels.get_h_bp()
     h = h/np.max(abs(h))
     # plt.figure(figsize=(4, 4))
     plt.plot(h, marker='.', linestyle='-')
@@ -49,7 +49,7 @@ def plot_h_hilbert():
     Plots the Hilbert transform's impulse response
     """
     # h = bandpass.get_h_hilbert(f0=constants.NYQUIST)
-    h = bandpass.get_h_hilbert()
+    h = kernels.get_h_hilbert()
     h = h/np.max(abs(h))
     plt.plot(h, marker='.', linestyle='-')
     plt.xlabel("Digital index $ n $")
@@ -62,7 +62,7 @@ def plot_h_total():
     """
     Plots the complete filter's impulse response
     """
-    h = bandpass.get_h()
+    h = kernels.get_h()
     h = h/np.max(abs(h))
     plt.plot(h, marker='.', linestyle='-')
     plt.xlabel("Digital index $ n $")
@@ -80,7 +80,7 @@ def plot_h_all():
 
     # bandpass
     ax = axes[0]
-    h = bandpass.get_h_bp()
+    h = kernels.get_h_bp()
     h = h/np.max(abs(h))
     ax.plot(h, marker='.', linestyle='-', linewidth=1, color=color_blue)
     ax.set_xlabel("Digital index $ n $")
@@ -89,7 +89,7 @@ def plot_h_all():
 
     # Hilbert
     ax = axes[1]
-    h = bandpass.get_h_hilbert()
+    h = kernels.get_h_hilbert()
     h = h/np.max(abs(h))
     ax.plot(h, marker='.', linestyle='-', linewidth=1, color=color_blue)
     ax.set_xlabel("Digital index $ n $")
@@ -97,7 +97,7 @@ def plot_h_all():
 
     # both
     ax = axes[2]
-    h = bandpass.get_h()
+    h = kernels.get_h()
     h = h/np.max(abs(h))
     ax.plot(h, marker='.', linestyle='-', linewidth=1, color=color_orange_dark)
     ax.set_xlabel("Digital index $ n $")
@@ -136,7 +136,7 @@ def plot_H_hilbert_abs():
     """
     Plots the Hilbert transformer's frequency response
     """
-    f, H = bandpass.get_H_hilbert()
+    f, H = kernels.get_H_hilbert()
     xmin, xmax = 0, 6000
     ymin, ymax = -70, 2
     plt.xlim(xmin, xmax)
@@ -163,7 +163,7 @@ def plot_H_total_abs():
     """
     Plots the combined Hilbert-bandpass filter's frequency response
     """
-    f, H = bandpass.get_H()
+    f, H = kernels.get_H()
     fig, ax = plt.subplots(figsize=(7, 4))
     mark_bandpass_specs(ax)
     ax.set_xlabel("Frequency $ f $ [Hz]")
@@ -182,7 +182,7 @@ def plot_H_total_abs_close_up():
     all required filter specifications.
 
     """
-    f, H = bandpass.get_H()
+    f, H = kernels.get_H()
     fig, ax = plt.subplots(figsize=(7, 4))
     mark_bandpass_specs(ax)
     ax.set_xlabel("Frequency $ f $ [Hz]")
@@ -204,7 +204,7 @@ def plot_H_total_abs_no_window():
     Plots the combined Hilbert-bandpass filter's frequency response with an unwindowed impulse resposne.
     """
     fig, ax = plt.subplots()
-    f, H = bandpass.get_H(window=False)
+    f, H = kernels.get_H(window=False)
     mark_bandpass_specs(ax)
     ax.set_xlabel("Frequency $ f $ [Hz]")
     ax.set_ylabel("Attenuation $ |H\, | $ [dB]")
@@ -224,7 +224,7 @@ def plot_H_compare_window():
 
     # WINDOWED
     ax = axes[0]
-    f, H = bandpass.get_H()
+    f, H = kernels.get_H()
     # mark_bandpass_specs(ax)
 
 
@@ -240,7 +240,7 @@ def plot_H_compare_window():
 
     # UNWINDOWED
     ax = axes[1]
-    f, H = bandpass.get_H(window=False)
+    f, H = kernels.get_H(window=False)
 
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
@@ -263,7 +263,7 @@ def plot_H_bp_angle():
     :param f: real 1D numpy array holding frequency axis data points in Hz
     :param H: complex 1D numpy array holding filter's frequency response
     """
-    f, H = bandpass.get_H_bp()
+    f, H = kernels.get_H_bp()
     fig, ax = plt.subplots()
     mark_angle_axes(ax)
     ax.plot(f, np.unwrap(np.angle(H)), marker='.')
@@ -277,7 +277,7 @@ def plot_H_hilbert_angle():
     :param f: real 1D numpy array holding frequency axis data points in Hz
     :param H: complex 1D numpy array holding filter's frequency response
     """
-    f, H = bandpass.get_H_hilbert()
+    f, H = kernels.get_H_hilbert()
     fig, ax = plt.subplots()
     mark_angle_axes(ax)
     ax.plot(f, np.unwrap(np.angle(H)), marker='.')
@@ -290,7 +290,7 @@ def plot_H_total_angle():
     Plots the complete filter's unwrapped phase response.
 
     """
-    f, H = bandpass.get_H()
+    f, H = kernels.get_H()
     fig, ax = plt.subplots(figsize=(7,4))
     mark_angle_axes(ax)
     ax.plot(f, np.unwrap(np.angle(H)))
@@ -329,15 +329,15 @@ def test_filter_time_domain_shift():
     phase = np.zeros(len(frequencies))
     num_periods=15
 
-    t, x_in = bandpass.get_sinusoids(frequencies, amplitudes, phase, num_periods=num_periods)
+    t, x_in = kernels.get_sinusoids(frequencies, amplitudes, phase, num_periods=num_periods)
 
     phase = (np.pi/2) * np.ones(len(frequencies))
-    _, x_shifted = bandpass.get_sinusoids(frequencies, amplitudes, phase, num_periods=num_periods)
+    _, x_shifted = kernels.get_sinusoids(frequencies, amplitudes, phase, num_periods=num_periods)
 
-    h = bandpass.get_h()
+    h = kernels.get_h()
     M = len(h)
     # xf = np.convolve(h, x_in)[int((M-1)/2):-int((M-1)/2)]
-    xf = bandpass.convolve_oa(h, x_in)[int((M-1)/2):-int((M-1)/2)]
+    xf = kernels.convolve_oa(h, x_in)[int((M-1)/2):-int((M-1)/2)]
 
     # Show five periods from period 5 to period 10 (Dropping first and last few
     # periods to avoid transient effects)
@@ -377,13 +377,13 @@ def test_filter_square():
     a square wave to its sinusoidal fundamental) components.
 
     """
-    h = bandpass.get_h()
+    h = kernels.get_h()
     M = len(h)
 
     f0 = 1200  # fundamental frequency
     n_terms = 10
     n_terms = min(n_terms,  int(NYQUIST/f0))
-    t, x_in = bandpass.get_square_wave(n_terms, f0, num_periods=4)
+    t, x_in = kernels.get_square_wave(n_terms, f0, num_periods=4)
     N = len(x_in)
 
     x_out = np.convolve(h, x_in)[int((M-1)/2):-int((M-1)/2)]
@@ -448,13 +448,13 @@ def test_filter_bandpass():
     the passband
 
     """
-    h = bandpass.get_h()
+    h = kernels.get_h()
     M = len(h)
 
     frequencies = np.array([300, 500, 1500, 2500, 2700])
     amplitudes = np.ones(len(frequencies))
     phase = np.zeros(len(frequencies))
-    t, x_in = bandpass.get_sinusoids(frequencies, amplitudes, phase, num_periods=3)
+    t, x_in = kernels.get_sinusoids(frequencies, amplitudes, phase, num_periods=3)
 
     N = len(x_in)
 
