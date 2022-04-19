@@ -249,15 +249,3 @@ def convolve_oa(h, x):
         conv = np.convolve(h, buf)
         y[N_chunks*L:] += conv
         return y
-
-
-def practice():
-    n = np.arange(-(M-1)/2, (M-1)/2 + 1, 1)
-    print(n)
-    out = np.where
-
-
-if __name__ == "__main__":
-    # get_h_bp()
-    # get_h()
-    practice()
