@@ -1,10 +1,5 @@
-# Hilbert Transformer
+# Bandpass Hilbert Transformer
 
-Originally the final project for the third-year FMF course *Zajemanje in obdelava podatkov* (Data Acquisition and Processing).
-This version is more polished and intended for submission as part of my masters application to ETSETB.
+Project goal: design and implement a finite impulse response (FIR) band-pass Hilbert transformer that works in real-time on 44100 Hz audio signals.
 
-The goal is to design and implement a band-pass Hilbert transformer that works in (approximately) real time.
-See the report for a more detailed introduction.
-
-
-## Code structure
+Context: This was originally a project for the third-year course *Zajemanje in obdelava podatkov* (Data Acquisition and Processing) at the Faculty of Mathematics and Physics and the University of Ljubljana, Slovenia, which I later put on GitHub for a public audience.
