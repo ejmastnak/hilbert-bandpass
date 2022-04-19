@@ -1,10 +1,11 @@
-# Source code
+# Source code and notes-to-self
 src/__pycache__/
 src/test
+meta/
 
-# Image files generated progamatically
+# Image files are generated progamatically adding them to version control would
+# be redundant
 *.pdf
-*.png
 *.jpg
 
 # LaTeX compilation files
