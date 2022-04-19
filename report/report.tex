@@ -301,13 +301,13 @@ The initialization of the audio stream is shown in Listing \ref{code:stream}.
 \begin{minted}{python}
 import numpy as np
 import pyaudio
-h = get_h()  # load impulse response from separate function
-CHUNK = 4096 - len(h) + 1  # frames per buffer
+h = get_impulse_response()  # load filter's impulse response
+CHUNK = 4096 - len(h) + 1   # frames per buffer
 pa = pyaudio.PyAudio()
 stream = pa.open(format=pyaudio.paFloat32,  # 32-bit floating point
         channels=1,  # use only single-channel audio
         rate=44100,  # sample rate [Hz]
-        input=True,  # use this stream as an input stream
+        input=True,  # use stream as an input stream
         frames_per_buffer=CHUNK)
 stream.start_stream()
 \end{minted}
