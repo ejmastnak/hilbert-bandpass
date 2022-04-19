@@ -13,15 +13,6 @@
 \subsection{Choosing a Window Function}
 
 We select a window function from the requirement that the filter's stopband attenuation be less than \SI{-40}{\decibell}, which requires a filter with peak approximation error (PAE) less than \SI{-40}{\decibell} \cite{introdsp, proakis}.
-% Compute passband and stopband ripple $ \delta_{\mathrm{p}} $ and $ \delta_{\mathrm{s}} $ according to
-% \begin{equation*}
-%     20 \log (1 + \delta_{\mathrm{p}}) \, \si{\decibell} = \SI{1}{\decibell} \implies \delta_{\mathrm{p}} = 10^{1/20} - 1 \approx 0.122
-% \end{equation*}
-% and
-% \begin{equation*}
-%     20 \log \delta_{\mathrm{s}} \, \si{\decibell} = - \SI{40}{\decibell} \implies \delta_{\mathrm{s}} = 10^{-2} = 0.01.
-% \end{equation*}
-% The smaller of these two is $ \delta_{\mathrm{s}} $, and the corresponding attenuation is \SI{-40}{\decibell}.
 A number of common window functions are listed in Table \ref{tab:windows}; of these, the Hann, Hamming and Blackman windows all have a PAE less than \SI{-40}{\decibell}. In principle, any of these would work; I chose a Hann window to avoid over-designing the filter, i.e. to avoid increasing the filter's transition band width in exchange for larger-than-required stopband attenuation.
 
 \begin{table}[htb!]
