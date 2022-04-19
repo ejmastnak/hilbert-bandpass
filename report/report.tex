@@ -49,9 +49,9 @@ The corresponding transition band width in units of normalized frequency is
     \Delta \omega = 2\pi \frac{\Delta f}{f_{\mathrm{s}}} = 2\pi \frac{\SI{500}{\hertz}}{\SI{41000}{\hertz}} = \frac{\pi}{41}.
 \end{equation*}
 Using the just-computed transition band width $ \Delta \omega $, an appropriate number of filter coefficients $ M $ is
-\begin{equation*}
-    \frac{8 \pi}{M} = \Delta \omega = \frac{\pi}{41} \implies M = 328.
-\end{equation*}
+\begin{equation}
+    \frac{8 \pi}{M} = \Delta \omega = \frac{\pi}{41} \implies M = 328. \label{eq:kernel_length}
+\end{equation}
 I implemented the actual filter with $ M + 1 = 329 $ coefficients, since an odd-length impulse response is more conducive to implementing a bandpass filter.\footnote{Specifically, implementing a Hilbert transform produces an antisymmetric impulse response, and the frequency response of filter with odd-length, antisymmetric impulse response has zeros at $ f = \SI{0}{\hertz} $ (DC) and at $ f = f_{\mathrm{s}}/2 $ (the Nyquist rate) \cite{introdsp}. This zero configuration is well-suited to a bandpass filter.}
 
 \begin{table}[htb!]
@@ -287,8 +287,6 @@ Audio data is captured from the microphone using \texttt{PortAudio} with an inpu
     \label{tab:stream}
 \end{table}
 
-Data is read from the audio stream as a hexadecimal Python byte string, which is then converted to an array of 32-bit floating point numbers with \texttt{NumPy}'s \texttt{frombuffer} function. For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}. The real-time filtering process works by convolving each buffer of audio data with the filter's impulse response using the overlap-add method \cite{convolution}, as shown in Listing \ref{code:filter}.
-
 \begin{listing}[htb!]
 \begin{minted}{python}
 import numpy as np
@@ -308,6 +306,17 @@ stream.start_stream()
     \label{code:stream}
 \end{listing}
 
+Data is read from the audio stream as a hexadecimal Python byte string, which is then converted to an array of 32-bit floating point numbers with \texttt{NumPy}'s \texttt{frombuffer} function. For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}.
+The real-time filtering process works by convolving each buffer of audio data with the filter's impulse response using the overlap-add method \cite{convolution}.
+The code implementing the overlap-add method, with explanatory comments, appears in Listing \ref{code:filter}.
+
+One specific feature of the code in Listing~\ref{code:filter} deserves special comment.
+First, here is the context: the real-time filtering program listens for input audio data and displays a continuously-updated plot of both the unfiltered input audio waveform and its bandpass-filtered and Hilbert-transformed version.
+The input and filtered signal are intentionally shown together on the same time-domain plot to verify the filter's phase-shifting property, as in e.g. Figure~\ref{fig:phase}.
+Resultantly, it is important that the unfiltered input signal and its filtered version correctly align in the time domain.
+FIR filtering inherently introduces a time delay to the filtered signal equal to the length $ M $ of the FIR filter kernel.
+To compensate for this delay, the code in Listing~\ref{code:filter} creates a delayed copy of the unfiltered input signal by convolving the raw input signal with a unit impulse centered at $ M / 2 $.
+This delayed version of the input signal and its FIR-filtered analog are then correctly aligned in the time domain.
 
 \begin{listing}
 \begin{minted}{python}
@@ -325,34 +334,53 @@ b'\x00\x82\x00\xe0\x9a\x00\x8c\xb0\x00<\x97\x00\xa0\x9c\x00\xfc\x92\x00 \xc4\xbb
 \begin{minted}{python}
 import numpy as np
 
-# conv_prev is global variable to store previous convolution.
-conv_prev = np.zeros(len(h) - 1)  # preallocate with zeros
-h = get_h()  # load impulse response from separate function
-M = len(h)   # number of IR coefficients
+# Load filter's impulse response from separate function
+h = get_impulse_response()
+M = len(h)  # length of impulse response
 
-def get_filtered_buffer(buffer_in):
+# Create a delay-by-M kernel to compensate FIR-induced delay 
+h_delay_by_M = np.zeros(M, dtype=np.float32)
+h_delay_by_M[int((M - 1)/2)] = 1.0
+
+# Declare global variable to store last `M` points of previous
+# iteration's convolution of filter kernel and audio buffer
+filter_conv_prev = np.zeros(M - 1)  # preallocate with zeros
+
+# Global variable to store last `M` points of previous
+# iteration's convolution of delay-by-M kernel and audio buffer
+conv_delayed_prev = np.zeros(M - 1)
+
+def get_filtered_audio_buffer(buffer_in):
     """
-    :param buffer_in: 1D Numpy array of length CHUNK and datatype 
-                       np.float32 holding raw audio buffer
-    return: filtered version of input, same length and datatype
+    Applies the Hilbert transform filter to the inputted audio buffer
+    `buffer_in`. Returns filtered output `buffer_out` and delayed
+    copy of `buffer_in` aligned in time with `buffer_out`.
     """
     L = len(buffer_in)
-    conv = np.convolve(h, buffer_in)  # FFT convolution routine
-    buffer_out = conv[:L]  # first L elements of convolution
+    # Convolve kernel `h` and `buffer_in` and store first `L` points
+    filter_conv = np.convolve(h, buffer_in)
+    buffer_out = filter_conv[:L]
 
-    # add last M-1 elements of previous convolution
-    # to first M-1 elements of current convolution
-    buffer_out[:M - 1] += conv_prev
-    
-    # store last M-1 elements of current convolution
-    conv_prev = conv[-(M - 1):]
-    return buffer_out
+    # Append last `M-1` elements of previous iteration's convolution
+    # to first `M-1` elements of current convolution
+    buffer_out[:M - 1] += filter_conv_prev
+
+    # Save last `M-1` elements of this iteration's convolution for
+    # use in the next iteration
+    filter_conv_prev = filter_conv[-(M - 1):]
+
+    # Create delayed copy of `buffer_in` aligning with `buffer_out`
+    delay_conv = np.convolve(h_delay_by_M, buffer_in)
+    buffer_in_delayed = delay_conv[:L]
+    buffer_in_delayed[:M - 1] += delay_conv_prev
+    delay_conv_prev = delay_conv[-(M - 1):]
+
+    return buffer_in_delayed, buffer_out
 \end{minted}
     \vspace{-1ex}
     \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering. Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository \TODO{reference}.}
     \label{code:filter}
 \end{listing}
-
 
 \section{Representative Filtered Signals}
 The following few figures were generated offline, all with sample rate $ f_{\mathrm{s}} = \SI{44100}{\hertz} $, and are meant to demonstrate the filter's desired phase shift and bandpass properties in an offline scenario.
@@ -383,7 +411,7 @@ A demonstration of the filter's real-time functionality may be seen in an online
 	\label{fig:bandpass}
 \end{figure}
 
-\newpage
+\clearpage
 \printbibliography
 
 \end{document}
