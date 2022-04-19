@@ -18,7 +18,7 @@ color_in = color_blue
 color_out = color_orange_dark
 
 save_figs = True
-fig_dir = "../figures/"
+fig_dir = "../media/"
 
 
 def plot_h(h):
