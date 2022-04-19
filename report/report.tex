@@ -13,7 +13,8 @@
 \subsection{Choosing a Window Function}
 
 We select a window function from the requirement that the filter's stopband attenuation be less than \SI{-40}{\decibell}, which requires a filter with peak approximation error (PAE) less than \SI{-40}{\decibell} \cite{introdsp, proakis}.
-A number of common window functions are listed in Table \ref{tab:windows}; of these, the Hann, Hamming and Blackman windows all have a PAE less than \SI{-40}{\decibell}. In principle, any of these would work; I chose a Hann window to avoid over-designing the filter, i.e. to avoid increasing the filter's transition band width in exchange for larger-than-required stopband attenuation.
+A number of common window functions are listed in Table \ref{tab:windows}; of these, the Hann, Hamming and Blackman windows all have a PAE less than \SI{-40}{\decibell}.
+In principle, any of these would work; I chose a Hann window to avoid over-designing the filter, i.e. to avoid increasing the filter's transition band width in exchange for larger-than-required stopband attenuation.
 
 \begin{table}[htb!]
     \centering
@@ -31,7 +32,9 @@ A number of common window functions are listed in Table \ref{tab:windows}; of th
     \label{tab:specs}
 \end{table}
 
-We estimate an appropriate number of window coefficients $ M $ by equating the known Hann window main lobe width of $ 8 \pi/M $ (from Table \ref{tab:windows}) to the filter's specified transition band width $ \Delta \omega $ in units of normalized frequency. First, referring to the specifications in Table \ref{tab:specs}, the filter's transition band width\footnote{In this problem the filter's upper and lower transition widths are both \SI{500}{\hertz}. If they were different, we would use the smaller (i.e. more restrictive) of the two.} is
+We estimate an appropriate number of window coefficients $ M $ by equating the known Hann window main lobe width of $ 8 \pi/M $ (from Table \ref{tab:windows}) to the filter's specified transition band width $ \Delta \omega $ in units of normalized frequency.
+First, referring to the specifications in Table \ref{tab:specs}, the filter's transition band width\footnote{In this problem the filter's upper and lower transition widths are both \SI{500}{\hertz}.
+If they were different, we would use the smaller (i.e. more restrictive) of the two.} is
 \begin{equation*}
     \Delta f = \SI{1000}{\hertz} - \SI{500}{\hertz} = \SI{2500}{\hertz} - \SI{2000}{\hertz} = \SI{500}{\hertz}.
 \end{equation*}%
@@ -43,7 +46,8 @@ Using the just-computed transition band width $ \Delta \omega $, an appropriate 
 \begin{equation}
     \frac{8 \pi}{M} = \Delta \omega = \frac{\pi}{41} \implies M = 328. \label{eq:kernel_length}
 \end{equation}
-I implemented the actual filter with $ M + 1 = 329 $ coefficients, since an odd-length impulse response is more conducive to implementing a bandpass filter.\footnote{Specifically, implementing a Hilbert transform produces an antisymmetric impulse response, and the frequency response of filter with odd-length, antisymmetric impulse response has zeros at $ f = \SI{0}{\hertz} $ (DC) and at $ f = f_{\mathrm{s}}/2 $ (the Nyquist rate) \cite{introdsp}. This zero configuration is well-suited to a bandpass filter.}
+I implemented the actual filter with $ M + 1 = 329 $ coefficients, since an odd-length impulse response is more conducive to implementing a bandpass filter.\footnote{Specifically, implementing a Hilbert transform produces an antisymmetric impulse response, and the frequency response of filter with odd-length, antisymmetric impulse response has zeros at $ f = \SI{0}{\hertz} $ (DC) and at $ f = f_{\mathrm{s}}/2 $ (the Nyquist rate) \cite{introdsp}.
+This zero configuration is well-suited to a bandpass filter.}
 
 \begin{table}[htb!]
         \centering
@@ -58,7 +62,9 @@ I implemented the actual filter with $ M + 1 = 329 $ coefficients, since an odd-
             Blackman & $ \frac{12 \pi}{M} $ & $ -74 $\\[0.3ex]
             \hline
         \end{tabular}     
-        \caption{Approximate main lobe width (MLW), in units of normalized frequency, and peak approximation error (PAE) of common window functions. $ M $ denotes the number of coefficients used to implement the window (and filter). Taken from \cite{proakis}.}
+        \caption{Approximate main lobe width (MLW), in units of normalized frequency, and peak approximation error (PAE) of common window functions.
+        $ M $ denotes the number of coefficients used to implement the window (and filter).
+        Taken from \cite{proakis}.}
         \label{tab:windows}
 \end{table}
 
@@ -104,7 +110,8 @@ The impulse response of an ideal \textit{bandpass} filter with high and low pass
     h_{\mathrm{bp}}[n] & = h_{\mathrm{lp}}[n; f_{\mathrm{high}}] - h_{\mathrm{lp}}[n; f_{\mathrm{low}}]\\[0.3ex]
     & = \frac{2 f_{\mathrm{high}}}{f_{\mathrm{s}}} \sinc \left[ \frac{2\pi f_{\mathrm{high}}}{f_{\mathrm{s}}}n \right] - \frac{2 f_{\mathrm{low}}}{f_{\mathrm{s}}} \sinc \left[ \frac{2\pi f_{\mathrm{low}}}{f_{\mathrm{s}}} n \right].
 \end{align*}
-This impulse response has a removable discontinuity at $ n = 0 $ which must be treated separately in a computer implementation. Using the limit $ \lim_{x \to 0} \sinc x = 1 $, this is
+This impulse response has a removable discontinuity at $ n = 0 $ which must be treated separately in a computer implementation.
+Using the limit $ \lim_{x \to 0} \sinc x = 1 $, this is
 \begin{equation*}
     h_{\mathrm{bp}}[0] = \frac{2}{f_{\mathrm{s}}}(f_{\mathrm{high}} - f_{\mathrm{low}}).
 \end{equation*}
@@ -138,7 +145,9 @@ If the Hilbert transformer is to apply to the entire discrete frequency domain, 
 However, this problem's specifications require the filter shift phase by $ \pi/2 $ only in the passband, so I choose a Hilbert transform cutoff frequency $ f_{0} = \SI{3000}{\hertz} $ instead of using the Nyquist rate $ f_{0} = f_{\mathrm{s}}/2 = \SI{22500}{\hertz} $.
 
 \subsubsection{Complete Ideal Impulse Response}
-Convolution is commutative and associative, which simplifies the practical implementation of the filter's impulse response. Namely, processing an input signal, say $ x $, with a bandpass filter with impulse response $ h_{\mathrm{bp}} $ and then passing the filtered signal, say $ x_{\mathrm{f}} $, through a Hilbert transformer with impulse response $ h_{\mathrm{H}} $ is equivalent to passing the input $ x $ through a single system whose impulse response is the convolution of $ h_{\mathrm{bp}} $ and $ h_{\mathrm{H}} $. This is shown symbolically in Equation \ref{eq:conv-assoc} and graphically in Figure \ref{fig:conv-assoc}.
+Convolution is commutative and associative, which simplifies the practical implementation of the filter's impulse response.
+Namely, processing an input signal, say $ x $, with a bandpass filter with impulse response $ h_{\mathrm{bp}} $ and then passing the filtered signal, say $ x_{\mathrm{f}} $, through a Hilbert transformer with impulse response $ h_{\mathrm{H}} $ is equivalent to passing the input $ x $ through a single system whose impulse response is the convolution of $ h_{\mathrm{bp}} $ and $ h_{\mathrm{H}} $.
+This is shown symbolically in Equation \ref{eq:conv-assoc} and graphically in Figure \ref{fig:conv-assoc}.
 
 \begin{equation}
     y = h_{\mathrm{H}} * x_{\mathrm{f}} = h_{\mathrm{H}} * ( h_{\mathrm{bp}} * x ) = (h_{\mathrm{H}} * h_{\mathrm{bp}}) * x \equiv h_{\mathrm{total}} * x. \label{eq:conv-assoc}
@@ -167,7 +176,8 @@ Convolution is commutative and associative, which simplifies the practical imple
                 \draw[->] (h) -- (y);
             \end{scope}
         \end{tikzpicture}    
-        \caption{Convolution's associativity simplifies the filter implementation: the left and right systems produce identical outputs, but if $ h_{\mathrm{bp}}*h_{\mathrm{H}} $ is computed beforehand, implementing the right version in real-time requires half as many convolutions. C.f. Equation \ref{eq:conv-assoc}.}
+        \caption{Convolution's associativity simplifies the filter implementation: the left and right systems produce identical outputs, but if $ h_{\mathrm{bp}}*h_{\mathrm{H}} $ is computed beforehand, implementing the right version in real-time requires half as many convolutions.
+        C.f. Equation \ref{eq:conv-assoc}.}
         \label{fig:conv-assoc}
 \end{figure}
 
@@ -209,7 +219,11 @@ The code used to compute $ h[n] $ appears in the \texttt{get\_h} function in the
 \end{figure}
 
 \subsection{Visualizing the Filter's Impulse and Frequency Responses}
-Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stage, the Hilbert transformer stage, and the convolution of the two stages. Figure \ref{fig:H-abs} shows the frequency response of the convolved bandpass-Hilbert system both with and without windowing. As expected theoretically, windowing the impulse response produces a far smoother frequency response and better stopband attenuation at the expense of a wider transition band. Figure \ref{fig:H-abs-close} attempts to demonstrate that the filter meets the specifications in Table \ref{tab:specs}. Finally, Figure \ref{fig:H-angle} shows the filter's phase response---the discontinuity in phase angle at $ f = \SI{0}{\hertz} $ and $ \theta \approx - \ang{45} $ shows the phase-shifting effect of the Hilbert transformer.
+Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stage, the Hilbert transformer stage, and the convolution of the two stages.
+Figure \ref{fig:H-abs} shows the frequency response of the convolved bandpass-Hilbert system both with and without windowing.
+As expected theoretically, windowing the impulse response produces a far smoother frequency response and better stopband attenuation at the expense of a wider transition band.
+Figure \ref{fig:H-abs-close} attempts to demonstrate that the filter meets the specifications in Table \ref{tab:specs}.
+Finally, Figure \ref{fig:H-angle} shows the filter's phase response---the discontinuity in phase angle at $ f = \SI{0}{\hertz} $ and $ \theta \approx - \ang{45} $ shows the phase-shifting effect of the Hilbert transformer.
 
 \newpage
 
@@ -228,7 +242,8 @@ Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stag
 	\centering
 	\includegraphics[width=0.85\linewidth]{H-abs-close}
     \vspace{-2ex}
-	\caption{The filter's frequency response in the transition and passband regions. The curve must not touch the shaded grey areas to meet the filter specifications in Table \ref{tab:specs}.}
+	\caption{The filter's frequency response in the transition and passband regions.
+    The curve must not touch the shaded grey areas to meet the filter specifications in Table \ref{tab:specs}.}
 	\label{fig:H-abs-close}
 \end{figure}
 
@@ -236,7 +251,8 @@ Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stag
 	\centering
 	\includegraphics[width=0.85\linewidth]{H-angle}
     \vspace{-2ex}
-	\caption{The filter's phase response. The phase is linear in the passband, while the discontinuity at $ f = \SI{0}{\hertz} $ corresponds to the Hilbert transformer phase shift.}
+	\caption{The filter's phase response.
+    The phase is linear in the passband, while the discontinuity at $ f = \SI{0}{\hertz} $ corresponds to the Hilbert transformer phase shift.}
 	\label{fig:H-angle}
 \end{figure}
 
@@ -247,7 +263,8 @@ Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stag
 The hardware and software used to implement the filter is summarized below:
 \begin{itemize}
 
-    \item Computer: 13-inch, 2012 MacBook Pro laptop with a \SI{2.5}{\giga \hertz} Intel Core i5 processor running macOS 10.14.6. Audio was captured using the laptop's built-in \SI{44100}{\hertz}, 2-channel microphone, but only one channel was used as filter input.
+    \item Computer: 13-inch, 2012 MacBook Pro laptop with a \SI{2.5}{\giga \hertz} Intel Core i5 processor running macOS 10.14.6.
+    Audio was captured using the laptop's built-in \SI{44100}{\hertz}, 2-channel microphone, but only one channel was used as filter input.
 
     \item I used version 19 of the \texttt{PortAudio} library \cite{portaudio}, which is an audio I/O library written in C, to capture the audio input stream from the computer's microphone.
 
@@ -259,7 +276,9 @@ Source code and a video demonstration of the filter's real-time functionality ca
 % \TODO{reference}.
 
 
-Audio data is captured from the microphone using \texttt{PortAudio} with an input stream with the specifications shown in Table \ref{tab:stream}. The number of frames per buffer is chosen so that the fast Fourier transform used to convolve the impulse response with the audio buffer has 4096 elements (i.e. a power of two, which is a general best practice for FFT algorithms). The initialization of the audio stream is shown in Listing \ref{code:stream}.
+Audio data is captured from the microphone using \texttt{PortAudio} with an input stream with the specifications shown in Table \ref{tab:stream}.
+The number of frames per buffer is chosen so that the fast Fourier transform used to convolve the impulse response with the audio buffer has 4096 elements (i.e. a power of two, which is a general best practice for FFT algorithms).
+The initialization of the audio stream is shown in Listing \ref{code:stream}.
 
 \begin{table}[htb!]
     \centering
@@ -274,7 +293,8 @@ Audio data is captured from the microphone using \texttt{PortAudio} with an inpu
         Frames per buffer & $ 4096 - \texttt{len(h)} + 1 $\\
         \hline
     \end{tabular}
-    \caption{Audio stream parameteters. \texttt{len(h)} is the length of the filter's impulse response.}
+    \caption{Audio stream parameteters.
+    \texttt{len(h)} is the length of the filter's impulse response.}
     \label{tab:stream}
 \end{table}
 
@@ -297,7 +317,8 @@ stream.start_stream()
     \label{code:stream}
 \end{listing}
 
-Data is read from the audio stream as a hexadecimal Python byte string, which is then converted to an array of 32-bit floating point numbers with \texttt{NumPy}'s \texttt{frombuffer} function. For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}.
+Data is read from the audio stream as a hexadecimal Python byte string, which is then converted to an array of 32-bit floating point numbers with \texttt{NumPy}'s \texttt{frombuffer} function.
+For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}.
 The real-time filtering process works by convolving each buffer of audio data with the filter's impulse response using the overlap-add method \cite{convolution}.
 The code implementing the overlap-add method, with explanatory comments, appears in Listing \ref{code:filter}.
 
@@ -369,7 +390,8 @@ def get_filtered_audio_buffer(buffer_in):
     return buffer_in_delayed, buffer_out
 \end{minted}
     \vspace{-1ex}
-    \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering. Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository \TODO{reference}.}
+    \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering.
+    Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository \TODO{reference}.}
     \label{code:filter}
 \end{listing}
 
@@ -381,7 +403,7 @@ A demonstration of the filter's real-time functionality may be seen in an online
 	\centering
 	\includegraphics[width=0.85\linewidth]{test-time-shift}
     \vspace{-3ex}
-	\caption{Demonstration of the filter's phase-shifting property with a \SI{1500}{\hertz} sinusoid. 
+	\caption{Demonstration of the filter's phase-shifting property with a \SI{1500}{\hertz} sinusoid.
     The dotted curve with blue circular markers is a copy of the input signal shifted by $ \pi/2 $, which the filtered output (in maroon-red) aligns with nicely, as it must to satisfy the phase-shifting property of a Hilbert transformer.}
 	\label{fig:phase}
 \end{figure}
@@ -390,7 +412,9 @@ A demonstration of the filter's real-time functionality may be seen in an online
 	\centering
 	\includegraphics[width=\linewidth]{test-square}
     \vspace{-5ex}
-	\caption{The filter's time domain and frequency domain output in response to a 10-term Fourier series approximation of a square wave with fundamental frequency $ f_{0} = \SI{1200}{\hertz} $. All higher harmonics are filtered out, leaving only the \SI{1200}{\hertz} sinusoidal carrier wave in the filtered output. Note also the $ \ang{90} $ phase shift between the input and output signals.}
+	\caption{The filter's time domain and frequency domain output in response to a 10-term Fourier series approximation of a square wave with fundamental frequency $ f_{0} = \SI{1200}{\hertz} $.
+    All higher harmonics are filtered out, leaving only the \SI{1200}{\hertz} sinusoidal carrier wave in the filtered output.
+    Note also the $ \ang{90} $ phase shift between the input and output signals.}
 	\label{fig:square}
 \end{figure}
 
@@ -398,7 +422,8 @@ A demonstration of the filter's real-time functionality may be seen in an online
 	\centering
 	\includegraphics[width=\linewidth]{test-bandpass}
     \vspace{-5ex}
-	\caption{The filter's time domain and frequency domain responses to a signal containing sinusoidal terms with frequencies $ (300, 500, 1500, 2500, 2700) \, \si{\hertz} $, all of equal amplitude. Only the \SI{1500}{\hertz} component in the passband is passed through the filter.}
+	\caption{The filter's time domain and frequency domain responses to a signal containing sinusoidal terms with frequencies $ (300, 500, 1500, 2500, 2700) \, \si{\hertz} $, all of equal amplitude.
+    Only the \SI{1500}{\hertz} component in the passband is passed through the filter.}
 	\label{fig:bandpass}
 \end{figure}
 
