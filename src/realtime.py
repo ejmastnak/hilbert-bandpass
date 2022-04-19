@@ -18,8 +18,8 @@ class AudioStream(object):
         self.h = bandpass.get_h()
         self.h = self.h.astype('float32')
         self.M = len(self.h)
-        self.h_delay = np.zeros(self.M, dtype=np.float32)
-        self.h_delay[int((self.M - 1)/2)] = 1.0
+        self.h_delay_by_M = np.zeros(self.M, dtype=np.float32)
+        self.h_delay_by_M[int((self.M - 1)/2)] = 1.0
 
         # Initialize audio steam constants
         # --------------------------------------------- #
@@ -45,8 +45,8 @@ class AudioStream(object):
         self.f_truncated = np.linspace(0, self.F_MAX, self.F_MAX_INDEX)
         self.audio_data_float32 = np.zeros(self.CHUNK, dtype=np.float32)
         self.audio_spectrum = np.zeros(self.F_MAX_INDEX, dtype=np.float32)
-        self.conv_prev = np.zeros(self.M - 1)
-        self.conv_prev_delay = np.zeros(self.M - 1)
+        self.filter_conv_prev = np.zeros(self.M - 1)
+        self.delay_conv_prev = np.zeros(self.M - 1)
 
         # Some plotting parameters
         color_blue = "#244d90"         # darker teal / blue
@@ -208,21 +208,22 @@ class AudioStream(object):
         
         """
         L = len(buffer_in)
-        conv = np.convolve(self.h, buffer_in)
-        buffer_out = conv[:L]
+        filter_conv = np.convolve(self.h, buffer_in)
+        buffer_out = filter_conv[:L]
 
         # Append last M-1 elements of previous convolution to first M-1
         # elements of current convolution
-        buffer_out[:self.M - 1] += self.conv_prev
+        buffer_out[:self.M - 1] += self.filter_conv_prev
 
-        # Save last M-1 elements of current convolution
-        self.conv_prev = conv[-(self.M - 1):]
+        # Save last M-1 elements of this iteration's convolution for use in the
+        # next iteration
+        self.filter_conv_prev = filter_conv[-(self.M - 1):]
 
         # Create a delayed copy of `buffer_in` that aligns with `buffer_out`
-        conv_delay = np.convolve(self.h_delay, buffer_in)
-        buffer_in_delayed = conv_delay[:L]
-        buffer_in_delayed[:self.M - 1] += self.conv_prev_delay
-        self.conv_prev_delay = conv_delay[-(self.M - 1):]
+        delay_conv = np.convolve(self.h_delay_by_M, buffer_in)
+        buffer_in_delayed = delay_conv[:L]
+        buffer_in_delayed[:self.M - 1] += self.delay_conv_prev
+        self.delay_conv_prev = delay_conv[-(self.M - 1):]
 
         return buffer_in_delayed, buffer_out
 
