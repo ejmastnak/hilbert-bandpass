@@ -256,14 +256,19 @@ Figure \ref{fig:h-all} shows the windowed impulse responses of the bandpass stag
 The hardware and software used to implement the filter is summarized below:
 \begin{itemize}
 
-    \item Computer: 13-inch, 2012 MacBook Pro laptop with a \SI{2.5}{\giga \hertz} Intel Core i5 processor running macOS 10.14.6. Audio was captured using the laptop's built-in \SI{44100}{\hertz}, 2-channel microphone, but only one channel was used as filter input. Further microphone specifications are unfortunately not shown in the computer's hardware report.
+    \item Computer: 13-inch, 2012 MacBook Pro laptop with a \SI{2.5}{\giga \hertz} Intel Core i5 processor running macOS 10.14.6. Audio was captured using the laptop's built-in \SI{44100}{\hertz}, 2-channel microphone, but only one channel was used as filter input.
 
-    \item I used version 19 of the \texttt{PortAudio} library \cite{portaudio}, which is an audio I/O library for \texttt{C/C++}, to interface with the computer's microphone and sound card.
+    \item I used version 19 of the \texttt{PortAudio} library \cite{portaudio}, which is an audio I/O library written in C, to capture the audio input stream from the computer's microphone.
 
-    \item I wrote the filter program itself in \texttt{Python}, using the \texttt{PyAudio} library \cite{pyaudio} to provide \texttt{Python} bindings for \texttt{PortAudio}. I used the \texttt{NumPy} library \cite{numpy} for efficient implementation of the fast Fourier transform, convolution, and common mathematical functions.
+    \item I wrote the filter program in Python and used the \texttt{PyAudio} library \cite{pyaudio} to provide Python bindings for the C code in \texttt{PortAudio}.
+    I used the \texttt{NumPy} library \cite{numpy} for efficient implementation of the fast Fourier transform, convolution, and common mathematical functions.
 
 \end{itemize}
-Audio data is captured from the microphone using \texttt{PortAudio} with an input stream with the specifications shown in Table \ref{tab:stream}. The number of frames per buffer is chosen so that the fast Fourier transform used to convolve the impulse response with the audio buffer has 1024 elements. The initialization of the audio stream is shown in Listing \ref{code:stream}.
+Source code and a video demonstration of the filter's real-time functionality can be found in an online repository, and a summary of how the real-time filtering works follows below.
+% \TODO{reference}.
+
+
+Audio data is captured from the microphone using \texttt{PortAudio} with an input stream with the specifications shown in Table \ref{tab:stream}. The number of frames per buffer is chosen so that the fast Fourier transform used to convolve the impulse response with the audio buffer has 4096 elements (i.e. a power of two, which is a general best practice for FFT algorithms). The initialization of the audio stream is shown in Listing \ref{code:stream}.
 
 \begin{table}[htb!]
     \centering
@@ -273,25 +278,25 @@ Audio data is captured from the microphone using \texttt{PortAudio} with an inpu
         \hline
         \hline
         Sample rate & \SI{44100}{\hertz}\\
-        Format & 16-bit signed integer\\
+        Format & 32-bit floating point\\
         Channels & 1\\
-        Frames per buffer & $ 1024 - \texttt{len(h)} + 1 $\\
+        Frames per buffer & $ 4096 - \texttt{len(h)} + 1 $\\
         \hline
     \end{tabular}
     \caption{Audio stream parameteters. \texttt{len(h)} is the length of the filter's impulse response.}
     \label{tab:stream}
 \end{table}
 
-\noindent Data is read from the audio stream as a hexadecimal \texttt{Python} byte string,\footnote{Which has its peculiarities compared to \texttt{C/C++}, for example prefixing hexadecimal numbers with \texttt{\textbackslash x} instead of with \texttt{0x}.} which is then converted to an array of 16-bit signed integers with \texttt{NumPy}'s \texttt{frombuffer} function. For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}. The real-time filtering process works by convolving each buffer of audio data with the filter's impulse response using the overlap-add method \cite{convolution}, as shown in Listing \ref{code:filter}.
+Data is read from the audio stream as a hexadecimal Python byte string, which is then converted to an array of 32-bit floating point numbers with \texttt{NumPy}'s \texttt{frombuffer} function. For orientation, a representative audio stream output buffer is shown in Listing \ref{code:output}. The real-time filtering process works by convolving each buffer of audio data with the filter's impulse response using the overlap-add method \cite{convolution}, as shown in Listing \ref{code:filter}.
 
 \begin{listing}[htb!]
 \begin{minted}{python}
 import numpy as np
 import pyaudio
 h = get_h()  # load impulse response from separate function
-CHUNK = 1024 - len(h) + 1  # frames per buffer
+CHUNK = 4096 - len(h) + 1  # frames per buffer
 pa = pyaudio.PyAudio()
-stream = pa.open(format=pyaudio.paInt16,  # 16-bit signed integer
+stream = pa.open(format=pyaudio.paFloat32,  # 32-bit floating point
         channels=1,  # use only single-channel audio
         rate=44100,  # sample rate [Hz]
         input=True,  # use this stream as an input stream
@@ -307,12 +312,12 @@ stream.start_stream()
 \begin{listing}
 \begin{minted}{python}
 >>> buffer = stream.read(10)  # read 10 frames
-b'a\x13\xbd\x13\x9c\x13\xfe\x12\xed\x11]\x10P\x0e\xd0\x0b\xca\x08Z\x05'
->>> buffer_int16 = np.frombuffer(data, dtype=np.int16)
-[4961 5053 5020 4862 4589 4189 3664 3024 2250 1370]
+b'\x00\x82\x00\xe0\x9a\x00\x8c\xb0\x00<\x97\x00\xa0\x9c\x00\xfc\x92\x00 \xc4\xbb\x00\x00\xf8\xa3\x00\x10'
+>>> buffer_float32 = np.frombuffer(data, dtype=np.float32)
+[0.2548523  0.30249023 0.34481812 0.29537964 0.3059082  0.28707886  0.36672974 0.23553467 0.32025146 0.22174072]
 \end{minted}   
     \vspace{-1ex}
-    \caption{Representative audio stream output as a byte string and 16-bit integer array.}
+    \caption{Representative audio stream output as a byte string and corresponding 32-bit floating point array (which has been rounded for conciseness).}
     \label{code:output}
 \end{listing}
 
@@ -328,7 +333,7 @@ M = len(h)   # number of IR coefficients
 def get_filtered_buffer(buffer_in):
     """
     :param buffer_in: 1D Numpy array of length CHUNK and datatype 
-                       np.int16 holding raw audio buffer
+                       np.float32 holding raw audio buffer
     return: filtered version of input, same length and datatype
     """
     L = len(buffer_in)
@@ -344,19 +349,21 @@ def get_filtered_buffer(buffer_in):
     return buffer_out
 \end{minted}
     \vspace{-1ex}
-    \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering. Complete code for the online filtering component of the project is in the \texttt{realtime.py} file.}
+    \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering. Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository \TODO{reference}.}
     \label{code:filter}
 \end{listing}
 
 
 \section{Representative Filtered Signals}
-The following few figures were generated offline, all with sample rate $ f_{\mathrm{s}} = \SI{44100}{\hertz} $, and are meant to demonstrate the filter's desired phase shift and bandpass properties in a static situation. The real-time, online component of the project will be demonstrated in person.
+The following few figures were generated offline, all with sample rate $ f_{\mathrm{s}} = \SI{44100}{\hertz} $, and are meant to demonstrate the filter's desired phase shift and bandpass properties in an offline scenario.
+A demonstration of the filter's real-time functionality may be seen in an online demonstration video \TODO{reference}.
 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=0.85\linewidth]{test-time-shift}
     \vspace{-3ex}
-	\caption{Demonstration of the filter's phase-shifting property with a \SI{1500}{\hertz} sinusoid. The dotted curve shows a copy of the input signal shifted by $ \pi/2 $ for comparison with the filtered output. Note that the filter's time domain properties are not ideal---the filtered signal's amplitude (red line) fluctuates somewhat over the first few periods shown here. (The amplitude does reach a steady state after about 5 periods, but this is not obvious from the four periods shown here.)}
+	\caption{Demonstration of the filter's phase-shifting property with a \SI{1500}{\hertz} sinusoid. 
+    The dotted curve with blue circular markers is a copy of the input signal shifted by $ \pi/2 $, which the filtered output (in maroon-red) aligns with nicely, as it must to satisfy the phase-shifting property of a Hilbert transformer.}
 	\label{fig:phase}
 \end{figure}
 
@@ -364,7 +371,7 @@ The following few figures were generated offline, all with sample rate $ f_{\mat
 	\centering
 	\includegraphics[width=\linewidth]{test-square}
     \vspace{-5ex}
-	\caption{The filter's time domain and frequency domain responses to a 10-term Fourier series approximation of a square wave with fundamental frequency $ f_{0} = \SI{1200}{\hertz} $. All higher harmonics are filtered out, leaving only the \SI{1200}{\hertz} sinusoidal carrier wave in the filtered output. Note also the $ \ang{90} $ phase shift between the input and output signals.}
+	\caption{The filter's time domain and frequency domain output in response to a 10-term Fourier series approximation of a square wave with fundamental frequency $ f_{0} = \SI{1200}{\hertz} $. All higher harmonics are filtered out, leaving only the \SI{1200}{\hertz} sinusoidal carrier wave in the filtered output. Note also the $ \ang{90} $ phase shift between the input and output signals.}
 	\label{fig:square}
 \end{figure}
 
