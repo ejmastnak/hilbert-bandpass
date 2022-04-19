@@ -5,7 +5,14 @@ import matplotlib.pyplot as plt
 from numpy.fft import fft, fftshift
 import kernels, constants
 
-class AudioStream(object):
+"""
+This script is used to test the filter in (near) real-time. The script opens an
+audio stream using the PyAudio library and continuously reads in and filters
+buffers of audio data. The input audio waveform and its filtered version are
+plotted in (near) real time using Matplotlib.
+"""
+
+class HilbertBandpass(object):
     def __init__(self):
 
         # Plotting modes to plot either time-domain waveform or
@@ -238,4 +245,4 @@ class AudioStream(object):
         print("Stream closed.")
 
 if __name__ == "__main__":
-    AudioStream()
+    HilbertBandpass()

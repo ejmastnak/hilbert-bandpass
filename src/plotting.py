@@ -3,6 +3,13 @@ from numpy.fft import fft, fftshift
 import matplotlib.pyplot as plt
 import constants, kernels
 
+""" 
+This script generates the figures used in report accompanying the project.
+Plots are generated in PDF format for integration with `pdflatex`, but the
+figure format can easily be changed (to e.g. JPEG or PNG) by changed by
+modifying the `format` parameter passed to Matplotlib's `savefig` function.
+"""
+
 F_S = constants.F_S  # sample rate [Hz]
 NYQUIST = constants.NYQUIST    # Nyqustion rate [Hz]
 F_STOP_L = constants.F_STOP_L  # [Hz]
