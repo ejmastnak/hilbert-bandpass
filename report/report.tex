@@ -268,13 +268,12 @@ The hardware and software used to implement the filter is summarized below:
 
     \item I used version 19 of the \texttt{PortAudio} library \cite{portaudio}, which is an audio I/O library written in C, to capture the audio input stream from the computer's microphone.
 
-    \item I wrote the filter program in Python and used the \texttt{PyAudio} library \cite{pyaudio} to provide Python bindings for the C code in \texttt{PortAudio}.
-    I used the \texttt{NumPy} library \cite{numpy} for efficient implementation of the fast Fourier transform, convolution, and common mathematical functions.
+    \item I wrote the filter program in Python, using the \texttt{PyAudio} library \cite{pyaudio} for Python bindings for the C code in \texttt{PortAudio}
+    and the \texttt{NumPy} library \cite{numpy} for efficient implementation of the fast Fourier transform, convolution, and common mathematical functions.
 
 \end{itemize}
-Source code and a video demonstration of the filter's real-time functionality can be found in an online repository, and a summary of how the real-time filtering works follows below.
-% \TODO{reference}.
-
+The full project source code is \href{https://github.com/ejmastnak/hilbert-bandpass}{on GitHub}, and a video demonstration of the filter's real-time functionality can be found \TODO{reference}. 
+A summary of how the real-time filtering works follows below.
 
 Audio data is captured from the microphone using \texttt{PortAudio} with an input stream with the specifications shown in Table \ref{tab:stream}.
 The number of frames per buffer is chosen so that the fast Fourier transform used to convolve the impulse response with the audio buffer has 4096 elements (i.e. a power of two, which is a general best practice for FFT algorithms).
@@ -391,7 +390,7 @@ def get_filtered_audio_buffer(buffer_in):
 \end{minted}
     \vspace{-1ex}
     \caption{The function \texttt{get\_filtered\_buffer} implements the overlap-add method used for real-time filtering.
-    Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository \TODO{reference}.}
+    Complete code for real-time filtering is in the \texttt{realtime.py} file in the project's source code repository, \url{https://github.com/ejmastnak/hilbert-bandpass}.}
     \label{code:filter}
 \end{listing}
 
