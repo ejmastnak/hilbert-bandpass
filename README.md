@@ -6,8 +6,8 @@ Context: This was originally a project for the third-year course *Zajemanje in o
 
 ## Demo
 
-Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals—you may want to (carefully) turn the volume on.
-The dotted blue line shows the inputted audio signal and the red line shows the filtered output.
+Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals—to hear the audio signals you can (carefully) unmute the video.
+The dotted blue line shows the inputted audio waveform and the red line shows the filtered output.
 
 https://user-images.githubusercontent.com/50270681/164271579-f601adac-189b-4375-be9d-3bb65c2113af.mp4
 
