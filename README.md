@@ -6,17 +6,17 @@ Context: This was originally a project for the third-year course *Zajemanje in o
 
 ## Demo
 
-Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals---you may want to (carefully) turn the volume on:
+Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals—you may want to (carefully) turn the volume on:
 
 https://user-images.githubusercontent.com/50270681/164107533-03ac9bce-3aa5-489e-8ef5-0c89c68f67d6.mp4
 
 Here are the filter specifications:
 
-| Frequency $f$ | Attenuation $\vert H \vert$ |
+| Frequency band | Attenuation |
 | - | - |
-| $f < 500 \, \mathrm{Hz}$ | $\vert H \vert < -40 \, \mathrm{dB}$|
-| $1000 \, \mathrm{Hz} < f < 2000 \, \mathrm{Hz}$ | $\vert H \vert \in (0 \pm 1) \, \mathrm{dB}$|
-| $f > 2500 \, \mathrm{Hz}$ | $\vert H \vert < -40 \, \mathrm{dB}$|
+| Below 500 Hz | Less than −40 dB |
+| 1000 Hz to 2000 Hz | 0 dB with up to 1 dB ripple |
+| Above 2500 Hz | Less than −40 dB |
 
 As shown in the video, the filter passes and phase-shifts signals in the 1000 Hz to 2000 Hz passband and attenuates signals in the stopbands below 500 Hz and above 2500 Hz.
 
