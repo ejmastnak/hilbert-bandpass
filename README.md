@@ -2,11 +2,11 @@
 
 Project goal: design and implement a finite impulse response (FIR) band-pass Hilbert transformer that works in near real-time on 44100 Hz audio signals.
 
-Context: This was originally a project for the third-year course *Zajemanje in obdelava podatkov* (Data Acquisition and Processing) at the Faculty of Mathematics and Physics and the University of Ljubljana, Slovenia, which I later put on GitHub for a public audience.
+Context: This was originally a project for the third-year course *Zajemanje in obdelava podatkov* (Data Acquisition and Processing) at the Faculty of Mathematics and Physics and the University of Ljubljana, Slovenia, which I later put online for a public audience.
 
 ## Demo
 
-Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals—to hear the audio signals you can (carefully) unmute the video.
+Here is the filter's bandpass and phase-shifting effect on a sequence of sinusoidal audio signals sampled at 44100 Hz—to hear the audio signals you can (carefully) unmute the video.
 The dotted blue line shows the inputted audio waveform and the red line shows the filtered output.
 
 https://user-images.githubusercontent.com/50270681/164277194-60ba6a33-3662-4588-8fc2-e1b63ea7774b.mp4
