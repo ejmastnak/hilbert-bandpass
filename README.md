@@ -19,6 +19,8 @@ Here are the filter specifications:
 | Above 2500 Hz | Less than −40 dB |
 
 As shown in the video, the filter passes and phase-shifts signals in the 1000 Hz to 2000 Hz passband and attenuates signals in the stopbands below 500 Hz and above 2500 Hz.
+The filter specs are clearly quite lenient, but that misses the point somewhat.
+The project is a pedagogical exercise in implementing a filter "by hand" rather than an attempt at designing high-performance, production-ready software, so the filter specifications are less important than the process of manually computing the filter kernel, applying a window function, implementing the overlap-add method for online convolution, etc.
 
 ## Project structure
 
