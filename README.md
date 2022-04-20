@@ -4,7 +4,21 @@ Project goal: design and implement a finite impulse response (FIR) band-pass Hil
 
 Context: This was originally a project for the third-year course *Zajemanje in obdelava podatkov* (Data Acquisition and Processing) at the Faculty of Mathematics and Physics and the University of Ljubljana, Slovenia, which I later put on GitHub for a public audience.
 
+## Demo
+
+Here is the filter's bandpass and phase-shifting effect on a sequence of 44100 Hz sinusoidal audio signals---you may want to (carefully) turn the volume on:
+
 https://user-images.githubusercontent.com/50270681/164107533-03ac9bce-3aa5-489e-8ef5-0c89c68f67d6.mp4
+
+Here are the filter specifications:
+
+| Frequency $f$ | Attenuation $\vert H \vert$ |
+| - | - |
+| $f < 500 \, \mathrm{Hz}$ | $\vert H \vert < -40 \, \mathrm{dB}$|
+| $1000 \, \mathrm{Hz} < f < 2000 \, \mathrm{Hz}$ | $\vert H \vert \in (0 \pm 1) \, \mathrm{dB}$|
+| $f > 2500 \, \mathrm{Hz}$ | $\vert H \vert < -40 \, \mathrm{dB}$|
+
+As shown in the video, the filter passes and phase-shifts signals in the 1000 Hz to 2000 Hz passband and attenuates signals in the stopbands below 500 Hz and above 2500 Hz.
 
 ## Project structure
 
